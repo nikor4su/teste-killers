@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrossel Completo com Indicadores</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: grid;
+            place-items: center;
+            min-height: 90vh;
+            
+            /* Substitua 'background-color: #f0f2f5;' por estas linhas */
+            background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1400');
+            background-size: cover; /* Faz a imagem cobrir toda a tela */
+            background-position: center; /* Centraliza a imagem */
+            background-attachment: fixed; /* A imagem fica parada quando você rola a página */
+            
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        /* O wrapper controla o posicionamento */
+        .carousel-wrapper {
+            width: 80%;
+            max-width: 700px;
+            position: relative;
+        }
+
+        /* Container ATUALIZADO para se destacar no gradiente */
+        .carousel-container {
+            width: 100%;
+            overflow: hidden; 
+            border-radius: 12px;
+            /* Sombra mais forte e fundo branco */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background-color: white; 
+            position: relative; 
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            position: relative; 
+        }
+
+        /* Imagem ATUALIZADA com cantos arredondados */
+        .carousel-slide img {
+            width: 100%;
+            display: block;
+            /* Arredonda só os cantos de cima */
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* Indicador de "múltiplas pessoas" */
+        .multi-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            user-select: none; 
+            z-index: 5;
+        }
+
+        /* Botões de navegação (Setas) - Posição levemente ajustada */
+        .carousel-button {
+            position: absolute;
+            top: 45%; /* Ajustado para alinhar melhor com a imagem */
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s ease;
+        }
+
+        .carousel-button:hover {
+            background-color: white;
+        }
+
+        .prev-btn {
+            left: 10px;
+        }
+
+        .next-btn {
+            right: 10px;
+        }
+        
+        /* Navegação de Bolinhas */
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+            /* Fica dentro do fundo branco do container */
+        }
+
+        .nav-indicator {
+            border: none;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            background-color: #c7c7c7;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-indicator:hover {
+            background-color: #8f8f8f;
+        }
+
+        .nav-indicator.current-slide {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="carousel-wrapper">
+        <div class="carousel-container">
+            <div class="carousel-track">
+                
+                <div class="carousel-slide">
+                    <div class="multi-indicator">A VIUVA</div>
+                    <img src="https://media.discordapp.net/attachments/1423140301618282599/1435461649866821652/image.png?ex=690c0d56&is=690abbd6&hm=3a8fb3ca17aafef2847e2a1e6de5bc501cb6d22f9b59d8590ac7ef1e3c0b8789&=&format=webp&quality=lossless&width=462&height=701" alt="Yelena">
+                </div>
+
+                <div class="carousel-slide">
+                    <div class="multi-indicator">Múltiplos</div>
+                    <img src="https://via.placeholder.com/700x450/3498DB/FFFFFF?text=Personagem+2+e+3" alt="Personagem Dois e Três">
+                </div>
+
+                <div class="carousel-slide">
+                    <div class="multi-indicator">Múltiplos</div>
+                    <img src="https://via.placeholder.com/700x450/2ECC71/FFFFFF?text=Personagem+4" alt="Personagem Quatro">
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="multi-indicator">Grupo</div>
+                    <img src="https://via.placeholder.com/700x450/E67E22/FFFFFF?text=Grupo+de+Heróis" alt="Grupo de Heróis">
+                </div>
+            </div>
+            
+            <button class="carousel-button prev-btn">&lt;</button>
+            <button class="carousel-button next-btn">&gt;</button>
+
+            <div class="carousel-nav">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const track = document.querySelector('.carousel-track');
+            const slides = Array.from(track.children);
+            const nextButton = document.querySelector('.next-btn');
+            const prevButton = document.querySelector('.prev-btn');
+            
+            const navContainer = document.querySelector('.carousel-nav');
+
+            let currentIndex = 0; 
+            
+            slides.forEach((slide, index) => {
+                const navButton = document.createElement('button');
+                navButton.classList.add('nav-indicator');
+                navButton.dataset.index = index; 
+                navContainer.appendChild(navButton);
+            });
+            
+            const navIndicators = Array.from(navContainer.children);
+
+            const updateSlidePosition = (transition = true) => {
+                const slideWidth = slides[0].getBoundingClientRect().width;
+                
+                if (transition) {
+                    track.style.transition = 'transform 0.5s ease-in-out';
+                } else {
+                    track.style.transition = 'none';
+                }
+                
+                track.style.transform = `translateX(-${slideWidth * currentIndex}px)`;
+                updateNav();
+            }
+
+            const updateNav = () => {
+                navIndicators.forEach(indicator => {
+                    indicator.classList.remove('current-slide');
+                });
+                
+                const currentIndicator = navIndicators[currentIndex];
+                if (currentIndicator) {
+                    currentIndicator.classList.add('current-slide');
+                }
+            }
+
+            nextButton.addEventListener('click', () => {
+                currentIndex++;
+                if (currentIndex >= slides.length) {
+                    currentIndex = 0; 
+                }
+                updateSlidePosition();
+            });
+
+            prevButton.addEventListener('click', () => {
+                currentIndex--;
+                if (currentIndex < 0) {
+                    currentIndex = slides.length - 1; 
+                }
+                updateSlidePosition();
+            });
+            
+            navContainer.addEventListener('click', e => {
+                const targetIndicator = e.target.closest('.nav-indicator');
+                
+                if (!targetIndicator) return; 
+                
+                const targetIndex = parseInt(targetIndicator.dataset.index);
+                
+                currentIndex = targetIndex;
+                updateSlidePosition();
+            });
+            
+            window.addEventListener('resize', () => {
+                updateSlidePosition(false); 
+            });
+
+            updateSlidePosition(false);
+        });
+    </script>
+
+</body>
+</html>
